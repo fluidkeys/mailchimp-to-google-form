@@ -1,1 +1,1 @@
-web: main
+web: mailchimp-to-google-form

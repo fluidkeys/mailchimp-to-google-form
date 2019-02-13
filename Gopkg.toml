@@ -24,6 +24,9 @@
 #   go-tests = true
 #   unused-packages = true
 
+[metadata.heroku]
+  root-package = "github.com/fluidkeys/mailchimp-to-google-form"
+  go-version = "1.10.5"
 
 [[constraint]]
   name = "github.com/gorilla/mux"

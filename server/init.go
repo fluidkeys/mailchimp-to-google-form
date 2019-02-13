@@ -9,8 +9,8 @@ func init() {
 		panic("MAILCHIMP_SECRET not set")
 	}
 
-	if googleFormId == "" {
-		panic("GOOGLE_FORM_ID not set")
+	if googleFormActionUrl == "" {
+		panic("GOOGLE_FORM_ACTION_URL not set")
 	}
 
 	if googleFormEmailField == "" {
@@ -19,5 +19,5 @@ func init() {
 }
 
 var mailchimpSecret string = os.Getenv("MAILCHIMP_SECRET")
-var googleFormId string = os.Getenv("GOOGLE_FORM_ID")
+var googleFormActionUrl string = os.Getenv("GOOGLE_FORM_ACTION_URL")
 var googleFormEmailField string = os.Getenv("GOOGLE_FORM_EMAIL_FIELD")
