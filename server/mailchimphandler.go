@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/mux"
 )
@@ -48,7 +49,11 @@ func handleMailchimpWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("subscribe email `%s`", email)
+	if err := postToGoogleForm(email); err != nil {
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusNoContent)
 	w.Write(nil)
@@ -63,4 +68,20 @@ func validateSecret(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	return true
+}
+
+func postToGoogleForm(email string) error {
+	log.Printf("posting to google form: %s", email)
+
+	response, err := http.PostForm(googleFormActionUrl, url.Values{
+		googleFormEmailField: {email},
+	})
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("google forms URL returned HTTP %d", response.StatusCode)
+	}
+	return nil
 }
