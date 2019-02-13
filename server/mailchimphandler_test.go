@@ -9,8 +9,14 @@ import (
 	"testing"
 )
 
-func TestPingEndpoint(t *testing.T) {
-	t.Run("test webhook endpoint", func(t *testing.T) {
+func TestMailchimpWebhookEndpoint(t *testing.T) {
+
+	t.Run("GET with valid secret should return 200", func(t *testing.T) {
+		mockResponse := getEndpoint(t)
+		assertStatusCode(t, http.StatusOK, mockResponse.Code)
+	})
+
+	t.Run("POST with valid secret, email and type", func(t *testing.T) {
 		formData := url.Values{}
 		formData.Set("data[email]", "example@example.com")
 		formData.Set("type", "subscribe")
@@ -18,6 +24,22 @@ func TestPingEndpoint(t *testing.T) {
 		mockResponse := postForm(t, formData)
 		assertStatusCode(t, http.StatusNoContent, mockResponse.Code)
 	})
+}
+
+func getEndpoint(t *testing.T) *httptest.ResponseRecorder {
+	// Create a request to pass to our handler. We don't have any query
+	// parameters for now, so we'll pass 'nil' as the third parameter.
+	t.Helper()
+
+	req, err := http.NewRequest("GET", "/fake_secret", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	return recorder
 }
 
 func postForm(t *testing.T, formData url.Values) *httptest.ResponseRecorder {

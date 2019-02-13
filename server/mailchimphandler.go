@@ -8,11 +8,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// handleMailchimpWebhookPing returns HTTP 200 OK if the given secret is verified. Mailchimp
+// makes an initial testing request to check that the webhook URL is alive.
+func handleMailchimpWebhookPing(w http.ResponseWriter, r *http.Request) {
+	if validateSecret(w, r) {
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	w.Write(nil)
+}
+
 func handleMailchimpWebhook(w http.ResponseWriter, r *http.Request) {
-	secret := mux.Vars(r)["secret"]
-	if secret != mailchimpSecret {
-		log.Printf("got bad secret `%s`, expected `%s`", secret, mailchimpSecret)
-		http.Error(w, "bad secret", http.StatusForbidden)
+	if !validateSecret(w, r) {
 		return
 	}
 
@@ -44,4 +52,15 @@ func handleMailchimpWebhook(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 	w.Write(nil)
+}
+
+func validateSecret(w http.ResponseWriter, r *http.Request) bool {
+	secret := mux.Vars(r)["secret"]
+	if secret != mailchimpSecret {
+		log.Printf("got bad secret `%s`, expected `%s`", secret, mailchimpSecret)
+		http.Error(w, "bad secret", http.StatusForbidden)
+		return false
+	}
+
+	return true
 }

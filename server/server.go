@@ -13,6 +13,7 @@ var router *mux.Router
 func init() {
 	router = mux.NewRouter()
 
+	router.HandleFunc("/{secret}", handleMailchimpWebhookPing).Methods("GET")
 	router.HandleFunc("/{secret}", handleMailchimpWebhook).Methods("POST")
 }
 
